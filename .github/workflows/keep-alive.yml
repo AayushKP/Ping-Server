@@ -2,7 +2,7 @@ name: Keep Render Server Alive
 
 on:
   schedule:
-    - cron: "*/10 * * * *"  
+    - cron: "*/10 * * * *"  # Runs every 10 minutes
   workflow_dispatch:  # Allows manual trigger if needed
 
 jobs:
@@ -10,5 +10,17 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Ping Render Server
-        run: curl -s -o /dev/null -w "%{http_code}" https://comuniq.onrender.com
+      - name: Ping Render Server with Retries
+        run: |
+          for i in {1..5}; do  # Retry up to 5 times
+            response=$(curl -s -o /dev/null -w "%{http_code}" https://comuniq.onrender.com)
+            echo "Attempt $i: HTTP Status $response"
+            if [ "$response" -eq 200 ]; then
+              echo "Server is up! ✅"
+              exit 0
+            fi
+            echo "Server might be down, retrying in 10 seconds... 🔄"
+            sleep 10
+          done
+          echo "❌ Server did not respond successfully after 5 attempts."
+          exit 1  # Fail the job if all retries fail
