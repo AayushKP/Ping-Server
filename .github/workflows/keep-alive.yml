@@ -1,0 +1,14 @@
+name: Keep Render Server Alive
+
+on:
+  schedule:
+    - cron: "*/10 * * * *"  
+  workflow_dispatch:  # Allows manual trigger if needed
+
+jobs:
+  ping-server:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Ping Render Server
+        run: curl -s -o /dev/null -w "%{http_code}" https://comuniq.onrender.com
