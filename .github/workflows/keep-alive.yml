@@ -4,6 +4,7 @@ on:
   schedule:
     - cron: "*/10 * * * *"  # Runs every 10 minutes
   workflow_dispatch:  # Allows manual trigger if needed
+  #comment to keep repo active
 
 jobs:
   ping-server:
